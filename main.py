@@ -120,13 +120,26 @@ def fixationDetection(data):
 #     pyplot.ylabel("Y axis")
 #     pyplot.show()
 # =============================================================================
+    
     return(centroids)
 
 def detectCentroids(data):
     returnVal = {}
+    returnVal['s26_false'] = []
+    returnVal['s10_false'] = []
+    returnVal['s16_false'] = []
+    returnVal['s6_false'] = []
+    returnVal['s30_false'] = []
+    returnVal['s20_false'] = []
+    returnVal['s26_true'] = []
+    returnVal['s10_true'] = []
+    returnVal['s16_true'] = []
+    returnVal['s6_true'] = []
+    returnVal['s30_true'] = []
+    returnVal['s20_true'] = []
     for dict_id in data:
-        centroids = fixationDetection(data[dict_id])       
-        returnVal[dict_id] = centroids
+        centroids = fixationDetection(data[dict_id]) 
+        returnVal[dict_id[0:dict_id.rfind('_')]].append(centroids)
     return(returnVal)
 
 def getKeys(dictionary):
