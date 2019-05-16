@@ -171,7 +171,7 @@ def calculateStandardDeviationMeanFixationDuration(data, meanValue):
             totalSum     += (abs(fixation[2] - meanValue)**2)
             totalRecords += 1
 
-    return math.sqrt(totalSum/totalSum)
+    return math.sqrt(totalSum/totalRecords)
 
 def calculateMeanSaccadeAmplitudes(data):
 
@@ -183,7 +183,7 @@ def calculateMeanSaccadeAmplitudes(data):
             totalSum        += calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1])
             totalAmplitudes += 1
 
-    return (totalSum/totalDurations)
+    return (totalSum/totalAmplitudes)
 
 def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
 
@@ -199,7 +199,7 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
 
 def calculateDistanceTwoPoints(x1, x2, y1, y2):
 
-    return(math.sqrt((x2 - x1)^^2 + (y2 - y1)^^2))
+    return(math.sqrt((x2 - x1)**2 + (y2 - y1)**2))
 
 def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectFalse):
     """ 
@@ -215,24 +215,26 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
 
     # Calculating MFD for True and False
     subjectStatistics.append(calculateMeanFixationDuration(dataOfSubjectTrue))
-    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue, subjectStatistics[0]))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue, subjectStatistics[1]))
     subjectStatistics.append(calculateMeanFixationDuration(dataofSubjectFalse))
-    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataofSubjectFalse, subjectStatistics[2]))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataofSubjectFalse, subjectStatistics[3]))
 
     # Calculating MSA for True and False
     subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataOfSubjectTrue))
-    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataOfSubjectTrue, subjectStatistics[0]))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataOfSubjectTrue, subjectStatistics[5]))
     subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataofSubjectFalse))
-    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse, subjectStatistics[2]))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse, subjectStatistics[7]))
 
     # Calculating MSA and MFD for Overall
     subjectStatistics.append(calculateMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse))
-    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse, subjectStatistics[0]))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse, subjectStatistics[9]))
     subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue))
-    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue, subjectStatistics[2]))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue, subjectStatistics[11]))
+
+    return subjectStatistics
 
 def printOutputToCsv(fileName, data):
-    outputFile    = open(fileName, "W")
+    outputFile    = open(fileName, "w")
     csvOutputFile = csv.writer(outputFile, delimiter=',')
     for subject in data:
         csvOutputFile.writerow(subject)
@@ -273,15 +275,28 @@ def main(argc, argv):
 
     # ====== TASK 2 ======
 
-    # print(sorted(centroids.keys()))
+    print(sorted(centroids.keys()))
+
+    #print(centroids["s10_true"][0][1:5])
+    #print(centroids["s10_false"][0][1:5])
+    #print(centroids["s16_true"][0][1:5])
+    #print(centroids["s16_false"][0][1:5])
+    #print(centroids["s20_true"][0][1:5])
+    #print(centroids["s20_false"][0][1:5])
+    #print(centroids["s26_true"][0][1:5])
+    #print(centroids["s26_false"][0][1:5])
+    #print(centroids["s30_true"][0][1:5])
+    #print(centroids["s30_false"][0][1:5])
+
 
     subjectList = list()
 
-    subjectList.append(calculateStatisticsOneSubject("S10", centroids["s10_true"], centroids["s10_false"]))
-    subjectList.append(calculateStatisticsOneSubject("S16", centroids["s16_true"], centroids["s16_false"]))
-    subjectList.append(calculateStatisticsOneSubject("S20", centroids["s20_true"], centroids["s20_false"]))    
-    subjectList.append(calculateStatisticsOneSubject("S26", centroids["s26_true"], centroids["s26_false"]))
-    subjectList.append(calculateStatisticsOneSubject("S30", centroids["s30_true"], centroids["s30_false"]))
+    subjectList.append(calculateStatisticsOneSubject("s6", centroids["s6_true"], centroids["s6_false"]))    
+    subjectList.append(calculateStatisticsOneSubject("s10", centroids["s10_true"], centroids["s10_false"]))
+    subjectList.append(calculateStatisticsOneSubject("s16", centroids["s16_true"], centroids["s16_false"]))
+    subjectList.append(calculateStatisticsOneSubject("s20", centroids["s20_true"], centroids["s20_false"]))    
+    subjectList.append(calculateStatisticsOneSubject("s26", centroids["s26_true"], centroids["s26_false"]))
+    subjectList.append(calculateStatisticsOneSubject("s30", centroids["s30_true"], centroids["s30_false"]))
 
     print(subjectList)
 
