@@ -20,6 +20,8 @@ DESPERSION_MAX      = 80
 DURATION_MIN        = 0.1   # In seconds
 SAMPLING_FREQUENCY  = 1000  # In Hertz
 RADIUS              = 40 
+HORIZONTAL = 97
+VERTICAL = 56
 
 def loadData():
     file = open('train.csv', 'r')
@@ -97,7 +99,9 @@ def fixationDetection(data):
                 sum_xy = np.sum(window_np, axis = 0) 
                 x_avg = sum_xy[0] / n
                 y_avg = sum_xy[1] / n
-                centroid = [x_avg, y_avg, time]
+                x_deg = x_avg / HORIZONTAL
+                y_deg = y_avg / VERTICAL
+                centroid = [x_deg, y_deg, time]
                 centroids.append(centroid)
             #else(It is not fixtation):
                 # Other events
@@ -180,7 +184,7 @@ def main(argc, argv):
     # print(centroids)
 
     # ====== TASK 2 ======
-
+    print(centroids['s10_false'])
     print(sorted(centroids.keys()))
 
 
