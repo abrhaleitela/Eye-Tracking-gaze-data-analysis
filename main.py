@@ -21,6 +21,8 @@ DESPERSION_MAX      = 80
 DURATION_MIN        = 0.1   # In seconds
 SAMPLING_FREQUENCY  = 1000  # In Hertz
 RADIUS              = 40 
+HORIZONTAL = 97
+VERTICAL = 56
 
 def loadData():
     file = open('train.csv', 'r')
@@ -98,7 +100,9 @@ def fixationDetection(data):
                 sum_xy = np.sum(window_np, axis = 0) 
                 x_avg = sum_xy[0] / n
                 y_avg = sum_xy[1] / n
-                centroid = [x_avg, y_avg, time]
+                x_deg = x_avg / HORIZONTAL
+                y_deg = y_avg / VERTICAL
+                centroid = [x_deg, y_deg, time]
                 centroids.append(centroid)
             #else(It is not fixtation):
                 # Other events
@@ -121,13 +125,26 @@ def fixationDetection(data):
 #     pyplot.ylabel("Y axis")
 #     pyplot.show()
 # =============================================================================
+    
     return(centroids)
 
 def detectCentroids(data):
     returnVal = {}
+    returnVal['s26_false'] = []
+    returnVal['s10_false'] = []
+    returnVal['s16_false'] = []
+    returnVal['s6_false'] = []
+    returnVal['s30_false'] = []
+    returnVal['s20_false'] = []
+    returnVal['s26_true'] = []
+    returnVal['s10_true'] = []
+    returnVal['s16_true'] = []
+    returnVal['s6_true'] = []
+    returnVal['s30_true'] = []
+    returnVal['s20_true'] = []
     for dict_id in data:
-        centroids = fixationDetection(data[dict_id])       
-        returnVal[dict_id] = centroids
+        centroids = fixationDetection(data[dict_id]) 
+        returnVal[dict_id[0:dict_id.rfind('_')]].append(centroids)
     return(returnVal)
 
 # ============ TASK 2 functions ===============
