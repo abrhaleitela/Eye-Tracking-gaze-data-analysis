@@ -6,6 +6,7 @@
 __author__   = "Eye tracking 2019, 4. period, Group 10"
 __version__  = "1.0.0"
 
+import os
 import re
 import sys
 import csv
@@ -129,10 +130,97 @@ def detectCentroids(data):
         returnVal[dict_id] = centroids
     return(returnVal)
 
-def getKeys(dictionary):
-    keys = dict()
-    #keys["10_true"] = 
+# ============ TASK 2 functions ===============
 
+def calculateMeanFixationDuration(data):
+
+    totalSum       = float(0)
+    totalDurations = int(0)
+
+    for trial in data:
+        for fixation in trial:
+            totalSum       += fixation[2]
+            totalDurations += 1
+
+    return (totalSum/totalDurations)
+
+def calculateStandardDeviationMeanFixationDuration(data, meanValue):
+
+    totalSum     = float(0)
+    totalRecords = int(0)
+
+    for trial in data:
+        for fixation in trial:
+            totalSum     += (abs(fixation[2] - meanValue)**2)
+            totalRecords += 1
+
+    return math.sqrt(totalSum/totalSum)
+
+def calculateMeanSaccadeAmplitudes(data):
+
+    totalSum        = float(0)
+    totalAmplitudes = int(0)
+
+    for trial in data:
+        for index in range(len(trial) - 1):
+            totalSum        += calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1])
+            totalAmplitudes += 1
+
+    return (totalSum/totalDurations)
+
+def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
+
+    totalSum     = float(0)
+    totalRecords = int(0)
+
+    for trial in data:
+        for index in range(len(trial) - 1):
+            totalSum     += (abs(calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1]) - meanValue)**2)
+            totalRecords += 1
+
+    return math.sqrt(totalSum/totalRecords)
+
+def calculateDistanceTwoPoints(x1, x2, y1, y2):
+
+    return(math.sqrt((x2 - x1)^^2 + (y2 - y1)^^2))
+
+def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectFalse):
+    """ 
+    Returns list of: MFD_true MFD_SD_true MFD_false MFD_SD_false MSA_true 
+    MSA_SD_true MSA_false MSA_SD_false MFD_overall MFD_overall_SD MSA_overall 
+    MSA_overall_SD.
+    """
+
+    subjectStatistics = list()
+
+    # Append the subject name
+    subjectStatistics.append(subjectName)
+
+    # Calculating MFD for True and False
+    subjectStatistics.append(calculateMeanFixationDuration(dataOfSubjectTrue))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue, subjectStatistics[0]))
+    subjectStatistics.append(calculateMeanFixationDuration(dataofSubjectFalse))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataofSubjectFalse, subjectStatistics[2]))
+
+    # Calculating MSA for True and False
+    subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataOfSubjectTrue))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataOfSubjectTrue, subjectStatistics[0]))
+    subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataofSubjectFalse))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse, subjectStatistics[2]))
+
+    # Calculating MSA and MFD for Overall
+    subjectStatistics.append(calculateMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse))
+    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse, subjectStatistics[0]))
+    subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue))
+    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue, subjectStatistics[2]))
+
+def printOutputToCsv(fileName, data):
+    outputFile    = open(fileName, "W")
+    csvOutputFile = csv.writer(outputFile, delimiter=',')
+    for subject in data:
+        csvOutputFile.writerow(subject)
+
+    outputFile.close()
 
 def main(argc, argv):
     """ Main function of the script. """
@@ -168,8 +256,25 @@ def main(argc, argv):
 
     # ====== TASK 2 ======
 
-    print(sorted(centroids.keys()))
+    # print(sorted(centroids.keys()))
 
+    subjectList = list()
+
+    subjectList.append(calculateStatisticsOneSubject("S10", centroids["s10_true"], centroids["s10_false"]))
+    subjectList.append(calculateStatisticsOneSubject("S16", centroids["s16_true"], centroids["s16_false"]))
+    subjectList.append(calculateStatisticsOneSubject("S20", centroids["s20_true"], centroids["s20_false"]))    
+    subjectList.append(calculateStatisticsOneSubject("S26", centroids["s26_true"], centroids["s26_false"]))
+    subjectList.append(calculateStatisticsOneSubject("S30", centroids["s30_true"], centroids["s30_false"]))
+
+    print(subjectList)
+
+    # ====== TASK 3 ======
+
+    printOutputToCsv("group10.csv", subjectList)
+
+    # ====== TASK 4 ======
+
+    # GRAPHS -> SALSENG
 
 if __name__ == "__main__":
 	""" Calls the function main()."""
