@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #! /usr/bin/env python3
 
-""" main.py: Eye Tracking Project """
+""" main.py: Eye Tracking Final Project. """
 
 __author__   = "Eye tracking 2019, 4. period, Group 10"
 __version__  = "1.0.0"
@@ -159,6 +159,9 @@ def calculateMeanFixationDuration(data):
             totalSum       += fixation[2]
             totalDurations += 1
 
+    if(totalDurations == 0):
+        return 0            
+
     return (totalSum/totalDurations)
 
 def calculateStandardDeviationMeanFixationDuration(data, meanValue):
@@ -170,6 +173,9 @@ def calculateStandardDeviationMeanFixationDuration(data, meanValue):
         for fixation in trial:
             totalSum     += (abs(fixation[2] - meanValue)**2)
             totalRecords += 1
+
+    if(totalRecords == 0):
+        return 0
 
     return math.sqrt(totalSum/totalRecords)
 
@@ -183,6 +189,9 @@ def calculateMeanSaccadeAmplitudes(data):
             totalSum        += calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1])
             totalAmplitudes += 1
 
+    if(totalAmplitudes == 0):
+        return 0
+
     return (totalSum/totalAmplitudes)
 
 def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
@@ -195,7 +204,14 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
             totalSum     += (abs(calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1]) - meanValue)**2)
             totalRecords += 1
 
+    if(totalRecords == 0):
+        return 0
+
     return math.sqrt(totalSum/totalRecords)
+
+def calculateMeanTwoValues(value1, value2):
+
+    return (value1 + value2) / 2
 
 def calculateDistanceTwoPoints(x1, x2, y1, y2):
 
@@ -226,10 +242,10 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse, subjectStatistics[7]))
 
     # Calculating MSA and MFD for Overall
-    subjectStatistics.append(calculateMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse))
-    subjectStatistics.append(calculateStandardDeviationMeanFixationDuration(dataOfSubjectTrue + dataofSubjectFalse, subjectStatistics[9]))
-    subjectStatistics.append(calculateMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue))
-    subjectStatistics.append(calculateStandardDeviationMeanSaccadeAmplitudes(dataofSubjectFalse + dataOfSubjectTrue, subjectStatistics[11]))
+    subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[1], subjectStatistics[3]))
+    subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[2], subjectStatistics[4]))
+    subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[5], subjectStatistics[7]))
+    subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
 
     return subjectStatistics
 
@@ -241,13 +257,15 @@ def printOutputToCsv(fileName, data):
 
     outputFile.close()
 
+# ============================================================================
+# ====  MAIN RUTINE START  ===================================================
+# ============================================================================
+
 def main(argc, argv):
     """ Main function of the script. """
 
-    # ====== TASK 1 ======
-    inputData = loadData()
-    dataSet   = dataPreprocessing(inputData)
-    inputData = None
+    # =============================
+    # ========== TASK 1 ===========
 
     """ centroids structure::: ==>  It is a dictinary as the following structure
     Structure: 
@@ -269,11 +287,16 @@ def main(argc, argv):
 
     """
 
+    inputData = loadData()
+    dataSet   = dataPreprocessing(inputData)
+    inputData = None
+
     centroids = detectCentroids(dataSet)
     dataSet   = None
     # print(centroids)
 
-    # ====== TASK 2 ======
+    # =============================
+    # ========== TASK 2 ===========
 
     print(sorted(centroids.keys()))
 
@@ -300,13 +323,19 @@ def main(argc, argv):
 
     print(subjectList)
 
-    # ====== TASK 3 ======
+    # =============================
+    # ========== TASK 3 ===========
 
     printOutputToCsv("group10.csv", subjectList)
 
-    # ====== TASK 4 ======
+    # =============================
+    # ========== TASK 4 ===========
 
     # GRAPHS -> SALSENG
+
+# ============================================================================
+# ====  MAIN RUTINE END  =====================================================
+# ============================================================================
 
 if __name__ == "__main__":
 	""" Calls the function main()."""
