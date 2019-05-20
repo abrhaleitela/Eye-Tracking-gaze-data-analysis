@@ -118,19 +118,17 @@ def fixationDetection(data):
             dmin_x = math.inf
             dmin_y = math.inf   
       
-# =============================================================================
-#     #Plot the result
-#     pyplot.scatter(data[:,[0]], data[:,[1]])
-#     for point in centroids:
-#         pyplot.scatter(point[0],point[1],color='black')
-#         center = pyplot.Circle((point[0],point[1]), RADIUS, fill = False, color ='red' )
-#         pyplot.gcf().gca().add_artist(center)
-#     pyplot.title("Output Data[Fixtation events detected]")
-#     pyplot.xlabel("X axis")
-#     pyplot.ylabel("Y axis")
-#     pyplot.show()
-#     print(len(centroids))
-# =============================================================================
+    #Plot the result
+    pyplot.plot(data[:,[0]], data[:,[1]])
+    for point in centroids:
+        pyplot.scatter(point[0],point[1],color='black')
+        center = pyplot.Circle((point[0],point[1]), RADIUS, fill = False, color ='red' )
+        pyplot.gcf().gca().add_artist(center)
+    pyplot.title("Output Data[Fixtation events detected]")
+    pyplot.xlabel("X axis in [°]")
+    pyplot.ylabel("Y axis in [°]")
+    pyplot.show()
+    print(len(centroids))
     return(centroids)
 
 def detectCentroids(data):
