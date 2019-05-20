@@ -186,7 +186,7 @@ def calculateMeanSaccadeAmplitudes(data):
 
     for trial in data:
         for index in range(len(trial) - 1):
-            totalSum        += calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1])
+            totalSum        += calculateDistanceTwoPoints(trial[index][1], trial[index + 1][1], trial[index][0], trial[index + 1][0])
             totalAmplitudes += 1
 
     if(totalAmplitudes == 0):
@@ -201,7 +201,7 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
 
     for trial in data:
         for index in range(len(trial) - 1):
-            totalSum     += (abs(calculateDistanceTwoPoints(trial[index][2], trial[index + 1][2], trial[index][1], trial[index + 1][1]) - meanValue)**2)
+            totalSum     += (abs(calculateDistanceTwoPoints(trial[index][1], trial[index + 1][1], trial[index][0], trial[index + 1][0]) - meanValue)**2)
             totalRecords += 1
 
     if(totalRecords == 0):
