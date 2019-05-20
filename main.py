@@ -17,7 +17,7 @@ import math
 # Constants used in the I-DT algorithm, 
 # Note that if the input data is changed then this constants might need to be tuned
 
-DESPERSION_MAX      = 80 #In degrees
+DESPERSION_MAX      = 2 #In degrees
 DURATION_MIN        = 0.1   # In seconds
 SAMPLING_FREQUENCY  = 1000  # In Hertz
 RADIUS              = 0.5 
@@ -253,6 +253,62 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
 
     return subjectStatistics
+def drawGraph(subjectList):
+    #'MFD_true', 'MFD_false',
+    #'MSA_true', 'MSA_false'
+    labels =[1,2]
+    colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
+    MFD_std = []#Error
+    MSA_std = []
+    MFD_means = []
+    MSA_means = []
+    i = 3
+    s=0
+    e=2
+    for sub in subjectList:
+        MFD_means.append(sub[1])
+        MFD_means.append(sub[3])
+        MFD_std.append(sub[2])
+        MFD_std.append(sub[4])
+        MFD_std_error = np.divide(MFD_std,[math.sqrt(len(subjectList))])
+        pyplot.bar(labels,MFD_means, color = colors[s:e], yerr = MFD_std_error, alpha = 0.5, align = 'center', capsize = 5)
+        i,j = labels
+        s=s+2
+        e=e+2
+        labels =[i + 2, j + 2]
+        MFD_means = []
+        MFD_std = []
+        MFD_std_error  = []
+    pyplot.title("MFD bar charts for different samples(one sample has same color: First - True: Second - False)" )
+    pyplot.legend(('S6','S10','S16','S20','S26','S30'), loc = 'upper right')
+    pyplot.ylim(top = 0.5)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Mean of MFD points')
+    pyplot.show()
+    labels =[1,2]
+    i = 3
+    s=0
+    e=2
+    for sub in subjectList:
+        MSA_means.append(sub[5])
+        MSA_means.append(sub[7])
+        MSA_std.append(sub[6])
+        MSA_std.append(sub[8])
+        MSA_std_error = np.divide(MSA_std,[math.sqrt(len(subjectList))])
+        pyplot.bar(labels, MSA_means, color = colors[s:e], yerr = MSA_std_error, alpha = 0.5, align = 'center', capsize = 5)
+        i,j = labels
+        s=s+2
+        e=e+2
+        labels =[i + 2, j + 2]
+        MSA_means = []
+        MSA_std = []
+        MFD_std_error  = []
+    pyplot.title("MSA bar charts for different samples(one sample has same color: First - True: Second - False)" )
+    pyplot.legend(('S6','S10','S16','S20','S26','S30') , loc = 'upper right')
+    pyplot.ylim(top = 16)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Mean of MSA points')
+    pyplot.show()
 
 def printOutputToCsv(fileName, data):
     outputFile    = open(fileName, "w")
@@ -295,8 +351,8 @@ def main(argc, argv):
     dataSet   = dataPreprocessing(inputData)
     inputData = None
 
-    #dataSet = convertUnitsToDegree(dataSet)
-
+    dataSet = convertUnitsToDegree(dataSet)
+    centroids = detectCentroids(dataSet)
     # print(centroids)
 
     # =============================
@@ -334,32 +390,7 @@ def main(argc, argv):
 
     # =============================
     # ========== TASK 4 ===========
-
-    #'MFD_true', 'MFD_false',
-    #'MSA_true', 'MSA_false'
-    labels =[1,2,3,4,5,6,7,8,9,10,11,12]
-    colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
-    MFD_std = []#Error
-    MSA_std = []
-    MFD_means = []
-    MSA_means = []
-    for sub in subjectList:
-        MFD_means.append(sub[1])
-        MFD_means.append(sub[3])
-        MSA_means.append(sub[5])
-        MSA_means.append(sub[7])
-        MFD_std.append(sub[2])
-        MFD_std.append(sub[4])
-        MSA_std.append(sub[6])
-        MSA_std.append(sub[8])
-    pyplot.bar(labels,MFD_means, color = colors, yerr = MFD_std, alpha = 0.5, align = 'center', capsize = 5)
-    pyplot.title("Bar chart for MFD" )
-    pyplot.show()
-    pyplot.bar(labels,MSA_means, color = colors, yerr = MSA_std, alpha = 0.5, align = 'center', capsize = 5)
-    pyplot.title("Bar chart for MSA" )
-    pyplot.legend(('MSA4', 'MSA3', 'MSA2'),loc = 'upper left')
-    pyplot.show()
-
+    drawGraph(subjectList)
 # ============================================================================
 # ====  MAIN RUTINE END  =====================================================
 # ============================================================================
