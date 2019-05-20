@@ -17,12 +17,14 @@ import math
 # Constants used in the I-DT algorithm, 
 # Note that if the input data is changed then this constants might need to be tuned
 
-DESPERSION_MAX      = 80 
+DESPERSION_MAX      = 80 #In degrees
 DURATION_MIN        = 0.1   # In seconds
 SAMPLING_FREQUENCY  = 1000  # In Hertz
-RADIUS              = 40 
+RADIUS              = 0.5 
 HORIZONTAL = 97
 VERTICAL = 56
+DEGREES = [HORIZONTAL, VERTICAL]
+
 
 def loadData():
     file = open('train.csv', 'r')
@@ -60,6 +62,11 @@ def dataPreprocessing(data):
         data_set_dic[dict_id] = row_data
     # pyplot.scatter(data_set_dic['s20_false_1'][:,[0]], data_set_dic['s20_false_1'][:,[1]])
     return(data_set_dic)
+
+def convertUnitsToDegree(data):
+    for ids in data:
+        data[ids] = data[ids]/DEGREES
+    return(data)
 
 def despertion(dmin_x, dmax_x,dmin_y,dmax_y):
     d = (dmax_x - dmin_x) + (dmax_y - dmin_y)
@@ -99,10 +106,8 @@ def fixationDetection(data):
                 window_np = np.array(window)
                 sum_xy = np.sum(window_np, axis = 0) 
                 x_avg = sum_xy[0] / n
-                y_avg = sum_xy[1] / n
-                x_deg = x_avg / HORIZONTAL
-                y_deg = y_avg / VERTICAL
-                centroid = [x_deg, y_deg, time]
+                y_avg = sum_xy[1] / n 
+                centroid = [x_avg, y_avg, time]
                 centroids.append(centroid)
             #else(It is not fixtation):
                 # Other events
@@ -124,8 +129,8 @@ def fixationDetection(data):
 #     pyplot.xlabel("X axis")
 #     pyplot.ylabel("Y axis")
 #     pyplot.show()
+#     print(len(centroids))
 # =============================================================================
-    
     return(centroids)
 
 def detectCentroids(data):
@@ -248,6 +253,8 @@ def main(argc, argv):
     inputData = loadData()
     dataSet   = dataPreprocessing(inputData)
     inputData = None
+    #dataSet = convertUnitsToDegree(dataSet)
+    
 
     """ centroids structure::: ==>  It is a dictinary as the following structure
     Structure: 
@@ -275,7 +282,7 @@ def main(argc, argv):
 
     # ====== TASK 2 ======
 
-    print(sorted(centroids.keys()))
+    #print(sorted(centroids.keys()))
 
     #print(centroids["s10_true"][0][1:5])
     #print(centroids["s10_false"][0][1:5])
@@ -298,16 +305,37 @@ def main(argc, argv):
     subjectList.append(calculateStatisticsOneSubject("s26", centroids["s26_true"], centroids["s26_false"]))
     subjectList.append(calculateStatisticsOneSubject("s30", centroids["s30_true"], centroids["s30_false"]))
 
-    print(subjectList)
+    #print(subjectList)
 
     # ====== TASK 3 ======
 
     printOutputToCsv("group10.csv", subjectList)
 
     # ====== TASK 4 ======
-
-    # GRAPHS -> SALSENG
-
+    #'MFD_true', 'MFD_false',
+    #'MSA_true', 'MSA_false'
+    labels =[1,2,3,4,5,6,7,8,9,10,11,12]
+    colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
+    MFD_std = []#Error
+    MSA_std = []
+    MFD_means = []
+    MSA_means = []
+    for sub in subjectList:
+        MFD_means.append(sub[1])
+        MFD_means.append(sub[3])
+        MSA_means.append(sub[5])
+        MSA_means.append(sub[7])
+        MFD_std.append(sub[2])
+        MFD_std.append(sub[4])
+        MSA_std.append(sub[6])
+        MSA_std.append(sub[8])
+    pyplot.bar(labels,MFD_means, color = colors, yerr = MFD_std, alpha = 0.5, align = 'center', capsize = 5)
+    pyplot.title("Bar chart for MFD" )
+    pyplot.show()
+    pyplot.bar(labels,MSA_means, color = colors, yerr = MSA_std, alpha = 0.5, align = 'center', capsize = 5)
+    pyplot.title("Bar chart for MSA" )
+    pyplot.legend(('MSA4', 'MSA3', 'MSA2'),loc = 'upper left')
+    pyplot.show()
 if __name__ == "__main__":
 	""" Calls the function main()."""
 	main(len(sys.argv), sys.argv)
