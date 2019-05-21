@@ -17,13 +17,13 @@ import math
 # Constants used in the I-DT algorithm, 
 # Note that if the input data is changed then this constants might need to be tuned
 
-DESPERSION_MAX      = 2 #In degrees
+DESPERSION_MAX      = 2     # In degrees
 DURATION_MIN        = 0.1   # In seconds
 SAMPLING_FREQUENCY  = 1000  # In Hertz
 RADIUS              = 0.5 
-HORIZONTAL = 97
-VERTICAL = 56
-DEGREES = [HORIZONTAL, VERTICAL]
+HORIZONTAL          = 97
+VERTICAL            = 56
+DEGREES             = [HORIZONTAL, VERTICAL]
 
 
 def loadData():
@@ -213,6 +213,20 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
 
     return math.sqrt(totalSum/totalRecords)
 
+def calculateDurationAndCount(data):
+
+    totalDuration      = int(0)
+    totalDurationCount = int(0)
+
+    for trial in data:
+        totalDurationCount += len(trial)
+
+        for fixation in trial:
+            totalDuration += fixation[2]
+            print(fixation[2])
+
+    return [totalDuration/len(data), totalDurationCount/len(data)]
+
 def calculateMeanTwoValues(value1, value2):
 
     return (value1 + value2) / 2
@@ -250,6 +264,11 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[2], subjectStatistics[4]))
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[5], subjectStatistics[7]))
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
+
+    # Calculating the time spent on durations and their count (True, False)
+    subjectStatistics.append(calculateDurationAndCount(dataOfSubjectTrue))
+    subjectStatistics.append(calculateDurationAndCount(dataofSubjectFalse))
+
     return subjectStatistics
 
 def drawGraph(subjectList,N):
