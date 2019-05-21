@@ -118,17 +118,18 @@ def fixationDetection(data):
             dmin_x = math.inf
             dmin_y = math.inf   
       
-    #Plot the result
-    pyplot.plot(data[:,[0]], data[:,[1]])
-    for point in centroids:
-        pyplot.scatter(point[0],point[1],color='black')
-        center = pyplot.Circle((point[0],point[1]), RADIUS, fill = False, color ='red' )
-        pyplot.gcf().gca().add_artist(center)
-    pyplot.title("Output Data[Fixtation events detected]")
-    pyplot.xlabel("X axis in [°]")
-    pyplot.ylabel("Y axis in [°]")
-    pyplot.show()
-    print(len(centroids))
+# =============================================================================
+#     #Plot the result
+#     pyplot.plot(data[:,[0]], data[:,[1]])
+#     for point in centroids:
+#         pyplot.scatter(point[0],point[1],color='black')
+#         center = pyplot.Circle((point[0],point[1]), RADIUS, fill = False, color ='red' )
+#         pyplot.gcf().gca().add_artist(center)
+#     pyplot.title("Output Data[Fixtation events detected]")
+#     pyplot.xlabel("X axis in [°]")
+#     pyplot.ylabel("Y axis in [°]")
+#     pyplot.show()
+# =============================================================================
     return(centroids)
 
 def detectCentroids(data):
@@ -249,11 +250,10 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[2], subjectStatistics[4]))
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[5], subjectStatistics[7]))
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
-
     return subjectStatistics
-def drawGraph(subjectList):
-    #'MFD_true', 'MFD_false',
-    #'MSA_true', 'MSA_false'
+
+def drawGraph(subjectList,N):
+    #'MFD_true', 'MFD_false', 'MSA_true', 'MSA_false'
     labels =[1,2]
     colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
     MFD_std = []#Error
@@ -261,14 +261,18 @@ def drawGraph(subjectList):
     MFD_means = []
     MSA_means = []
     i = 3
-    s=0
-    e=2
+    s = 0
+    e = 2
+    known = ['true','false']
     for sub in subjectList:
         MFD_means.append(sub[1])
         MFD_means.append(sub[3])
         MFD_std.append(sub[2])
         MFD_std.append(sub[4])
-        MFD_std_error = np.divide(MFD_std,[math.sqrt(len(subjectList))])
+        nTrue = N[sub[0]+'_'+known[0]]
+        nFalse = N[sub[0]+'_'+known[1]]
+        n = [math.sqrt(nTrue), math.sqrt(nFalse)]
+        MFD_std_error = np.divide(MFD_std,n)
         pyplot.bar(labels,MFD_means, color = colors[s:e], yerr = MFD_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -277,6 +281,7 @@ def drawGraph(subjectList):
         MFD_means = []
         MFD_std = []
         MFD_std_error  = []
+        n = []
     pyplot.title("MFD bar charts for different samples(one sample has same color: First - True: Second - False)" )
     pyplot.legend(('S6','S10','S16','S20','S26','S30'), loc = 'upper right')
     pyplot.ylim(top = 0.5)
@@ -285,14 +290,17 @@ def drawGraph(subjectList):
     pyplot.show()
     labels =[1,2]
     i = 3
-    s=0
-    e=2
+    s = 0
+    e = 2
     for sub in subjectList:
         MSA_means.append(sub[5])
         MSA_means.append(sub[7])
         MSA_std.append(sub[6])
         MSA_std.append(sub[8])
-        MSA_std_error = np.divide(MSA_std,[math.sqrt(len(subjectList))])
+        nTrue = N[sub[0]+'_'+known[0]]
+        nFalse = N[sub[0]+'_'+known[1]]
+        n = [math.sqrt(nTrue), math.sqrt(nFalse)]
+        MSA_std_error = np.divide(MSA_std,n)
         pyplot.bar(labels, MSA_means, color = colors[s:e], yerr = MSA_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -300,6 +308,7 @@ def drawGraph(subjectList):
         labels =[i + 2, j + 2]
         MSA_means = []
         MSA_std = []
+        n = []
         MFD_std_error  = []
     pyplot.title("MSA bar charts for different samples(one sample has same color: First - True: Second - False)" )
     pyplot.legend(('S6','S10','S16','S20','S26','S30') , loc = 'upper right')
@@ -307,15 +316,23 @@ def drawGraph(subjectList):
     pyplot.xlabel('Labels as in the legend')
     pyplot.ylabel('Mean of MSA points')
     pyplot.show()
-
+    
 def printOutputToCsv(fileName, data):
     outputFile    = open(fileName, "w")
     csvOutputFile = csv.writer(outputFile, delimiter=',')
     for subject in data:
         csvOutputFile.writerow(subject)
-
     outputFile.close()
-
+    
+def findLengthOfEachSample(centroids):
+    N = {}
+    ids = ['s6_true','s6_false','s10_true','s10_false','s16_true','s16_false','s20_true','s20_false','s26_true','s26_false','s30_true','s30_false']
+    for eachID in ids:
+        n = 0
+        for eachSample in centroids[eachID]:
+            n = n + len(eachSample)
+        N[eachID] = n
+    return N   
 # ============================================================================
 # ====  MAIN RUTINE START  ===================================================
 # ============================================================================
@@ -388,7 +405,9 @@ def main(argc, argv):
 
     # =============================
     # ========== TASK 4 ===========
-    drawGraph(subjectList)
+    N = findLengthOfEachSample(centroids)
+    drawGraph(subjectList,N)
+   
 # ============================================================================
 # ====  MAIN RUTINE END  =====================================================
 # ============================================================================
@@ -396,5 +415,4 @@ def main(argc, argv):
 if __name__ == "__main__":
 	""" Calls the function main()."""
 	main(len(sys.argv), sys.argv)
-
 # End of file: main.py
