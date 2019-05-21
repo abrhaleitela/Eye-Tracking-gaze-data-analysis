@@ -199,6 +199,7 @@ def calculateMeanSaccadeAmplitudes(data):
     return (totalSum/totalAmplitudes)
 
 def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
+    """ Calculates the. """
 
     totalSum     = float(0)
     totalRecords = int(0)
@@ -214,6 +215,7 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
     return math.sqrt(totalSum/totalRecords)
 
 def calculateDurationAndCount(data):
+    """ Calculates the duration and count of fixations. """
 
     totalDuration      = int(0)
     totalDurationCount = int(0)
@@ -228,10 +230,12 @@ def calculateDurationAndCount(data):
     return [totalDuration/len(data), totalDurationCount/len(data)]
 
 def calculateMeanTwoValues(value1, value2):
+    """ Calculates simple mean of two values. """
 
     return (value1 + value2) / 2
 
 def calculateDistanceTwoPoints(x1, x2, y1, y2):
+    """ Returns the euclidian distance between two points. """
 
     return(math.sqrt((x2 - x1)**2 + (y2 - y1)**2))
 
@@ -266,8 +270,8 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
 
     # Calculating the time spent on durations and their count (True, False)
-    subjectStatistics.append(calculateDurationAndCount(dataOfSubjectTrue))
-    subjectStatistics.append(calculateDurationAndCount(dataofSubjectFalse))
+    # subjectStatistics.append(calculateDurationAndCount(dataOfSubjectTrue))
+    # subjectStatistics.append(calculateDurationAndCount(dataofSubjectFalse))
 
     return subjectStatistics
 
@@ -342,7 +346,7 @@ def printOutputToCsv(fileName, data):
     for subject in data:
         csvOutputFile.writerow(subject)
     outputFile.close()
-    
+
 def findLengthOfEachSample(centroids):
     N = {}
     ids = ['s6_true','s6_false','s10_true','s10_false','s16_true','s16_false','s20_true','s20_false','s26_true','s26_false','s30_true','s30_false']
