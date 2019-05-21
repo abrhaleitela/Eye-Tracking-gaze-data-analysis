@@ -287,6 +287,7 @@ def drawGraph(subjectList,N):
     s = 0
     e = 2
     known = ['true','false']
+    Agg_MSA_err = Agg_MFD_err = [0, 0] 
     for sub in subjectList:
         MFD_means.append(sub[1])
         MFD_means.append(sub[3])
@@ -296,6 +297,7 @@ def drawGraph(subjectList,N):
         nFalse = N[sub[0]+'_'+known[1]]
         n = [math.sqrt(nTrue), math.sqrt(nFalse)]
         MFD_std_error = np.divide(MFD_std,n)
+        Agg_MFD_err = Agg_MFD_err + MFD_std_error
         pyplot.bar(labels,MFD_means, color = colors[s:e], yerr = MFD_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -315,7 +317,12 @@ def drawGraph(subjectList,N):
     i = 3
     s = 0
     e = 2
+    Agg_MFD_True = Agg_MFD_False = Agg_MSA_True = Agg_MSA_False = 0
     for sub in subjectList:
+        Agg_MFD_True = Agg_MFD_True + sub[1]
+        Agg_MFD_False = Agg_MFD_False + sub[3]
+        Agg_MSA_True = Agg_MSA_True + sub[5]
+        Agg_MSA_False = Agg_MSA_False + sub[7]
         MSA_means.append(sub[5])
         MSA_means.append(sub[7])
         MSA_std.append(sub[6])
@@ -324,6 +331,7 @@ def drawGraph(subjectList,N):
         nFalse = N[sub[0]+'_'+known[1]]
         n = [math.sqrt(nTrue), math.sqrt(nFalse)]
         MSA_std_error = np.divide(MSA_std,n)
+        Agg_MSA_err = Agg_MSA_err + MSA_std_error
         pyplot.bar(labels, MSA_means, color = colors[s:e], yerr = MSA_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -339,6 +347,27 @@ def drawGraph(subjectList,N):
     pyplot.xlabel('Labels as in the legend')
     pyplot.ylabel('Mean of MSA points')
     pyplot.show()
+    
+    #Aggregated graph for MFD 
+    labels = [1,2]
+    pyplot.bar(labels[0], Agg_MFD_True, color = colors[1], yerr = Agg_MFD_err[0], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.bar(labels[1], Agg_MFD_False, color = colors[3], yerr = Agg_MFD_err[1], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.title("MFD bar charts for aggregated samples" )
+    pyplot.legend(('Agg_MFD_True','Agg_MFD_False') , loc = 'upper right')
+    pyplot.ylim(top = 2)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Aggregated Mean of MFD')
+    pyplot.show()
+    
+    #Aggregated graph for MSA
+    pyplot.bar(labels[0], Agg_MSA_True, color = colors[1], yerr = Agg_MSA_err[0], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.bar(labels[1], Agg_MSA_False, color = colors[3], yerr = Agg_MSA_err[1], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.title("MSA bar charts for aggregated samples" )
+    pyplot.legend(('Agg_MSA_True','Agg_MSA_False') , loc = 'upper right')
+    pyplot.ylim(top = 49)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Aggregated Mean of MSA')
+    pyplot.show() 
     
 def printOutputToCsv(fileName, data):
     outputFile    = open(fileName, "w")
