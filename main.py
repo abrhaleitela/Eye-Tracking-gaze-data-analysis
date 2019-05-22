@@ -25,13 +25,20 @@ HORIZONTAL          = 97
 VERTICAL            = 56
 DEGREES             = [HORIZONTAL, VERTICAL]
 
+# ============================================================================
+# = FUNCTIONS ================================================================
+# ============================================================================
 
 def loadData():
+    """ Loading the input file "train.csv". """
+
     file = open('train.csv', 'r')
     data = list(csv.reader(file, delimiter=','))
     return (data)
 
 def dataPreprocessing(data):
+    """ Loades the data based on given subjects IDs. """
+
     data_set_dic = {}
     s10_ids = s20_ids = s30_ids = s6_ids = s16_ids = s26_ids = 0
     for row in data:
@@ -64,11 +71,15 @@ def dataPreprocessing(data):
     return(data_set_dic)
 
 def convertUnitsToDegree(data):
+    """ Converts units to degrees. """
+
     for ids in data:
         data[ids] = data[ids]/DEGREES
     return(data)
 
 def despertion(dmin_x, dmax_x,dmin_y,dmax_y):
+    """ Makes despertion. """
+
     d = (dmax_x - dmin_x) + (dmax_y - dmin_y)
     if(d <= DESPERSION_MAX):
         return True
@@ -76,13 +87,16 @@ def despertion(dmin_x, dmax_x,dmin_y,dmax_y):
         return False
 
 def fixationDetection(data): 
-    #Initializtion of variables
+    """ Detects the fixation. """
+
+    # Initializtion of the variables
     window    = []
     centroids = []
     dmax_x = -1 * math.inf 
     dmax_y = -1 * math.inf
     dmin_x = math.inf
     dmin_y = math.inf
+
     for point in data:
         # Assign max and min values in the window
         if(point[0] < dmin_x):
@@ -109,9 +123,9 @@ def fixationDetection(data):
                 y_avg = sum_xy[1] / n 
                 centroid = [x_avg, y_avg, time]
                 centroids.append(centroid)
-            #else(It is not fixtation):
+            # else(It is not fixtation):
                 # Other events
-            #Reset all variables when we destroy our window
+            # Reset all variables when we destroy our window
             window = []
             dmax_x = -1 * math.inf
             dmax_y = -1 * math.inf
@@ -119,7 +133,7 @@ def fixationDetection(data):
             dmin_y = math.inf   
       
 # =============================================================================
-#     #Plot the result
+#     # Plot the result
 #     pyplot.plot(data[:,[0]], data[:,[1]])
 #     for point in centroids:
 #         pyplot.scatter(point[0],point[1],color='black')
@@ -133,6 +147,8 @@ def fixationDetection(data):
     return(centroids)
 
 def detectCentroids(data):
+    """ Detects the centroids coordinates of the fixations. """
+
     returnVal = {}
     returnVal['s26_false'] = []
     returnVal['s10_false'] = []
@@ -154,6 +170,7 @@ def detectCentroids(data):
 # ============ TASK 2 functions ===============
 
 def calculateMeanFixationDuration(data):
+    """ Calculates the mean of fixation duration. """
 
     totalSum       = float(0)
     totalDurations = int(0)
@@ -169,6 +186,7 @@ def calculateMeanFixationDuration(data):
     return (totalSum/totalDurations)
 
 def calculateStandardDeviationMeanFixationDuration(data, meanValue):
+    """ Calculates the standard deviations of fixation duration. """
 
     totalSum     = float(0)
     totalRecords = int(0)
@@ -184,6 +202,7 @@ def calculateStandardDeviationMeanFixationDuration(data, meanValue):
     return math.sqrt(totalSum/totalRecords)
 
 def calculateMeanSaccadeAmplitudes(data):
+    """ Calculates the mean of saccade amplitudes. """
 
     totalSum        = float(0)
     totalAmplitudes = int(0)
@@ -199,6 +218,7 @@ def calculateMeanSaccadeAmplitudes(data):
     return (totalSum/totalAmplitudes)
 
 def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
+    """ Calculates the standard deviation of the saccade amplitudes. """
 
     totalSum     = float(0)
     totalRecords = int(0)
@@ -214,6 +234,7 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
     return math.sqrt(totalSum/totalRecords)
 
 def calculateDurationAndCount(data):
+    """ Unused. Just for statistical purposes. """
 
     totalDuration      = int(0)
     totalDurationCount = int(0)
@@ -228,6 +249,7 @@ def calculateDurationAndCount(data):
     return [totalDuration/len(data), totalDurationCount/len(data)]
 
 def calculateMeanTwoValues(value1, value2):
+    """ Calculates the mean. """
 
     return (value1 + value2) / 2
 
