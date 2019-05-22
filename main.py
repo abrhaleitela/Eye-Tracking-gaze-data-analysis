@@ -235,6 +235,7 @@ def calculateStandardDeviationMeanSaccadeAmplitudes(data, meanValue):
 
 def calculateDurationAndCount(data):
     """ Unused. Just for statistical purposes. """
+    """ Calculates the duration and count of fixations. """
 
     totalDuration      = int(0)
     totalDurationCount = int(0)
@@ -249,11 +250,12 @@ def calculateDurationAndCount(data):
     return [totalDuration/len(data), totalDurationCount/len(data)]
 
 def calculateMeanTwoValues(value1, value2):
-    """ Calculates the mean. """
+    """ Calculates simple aritmetic mean of two values. """
 
     return (value1 + value2) / 2
 
 def calculateDistanceTwoPoints(x1, x2, y1, y2):
+    """ Returns the euclidian distance between two points. """
 
     return(math.sqrt((x2 - x1)**2 + (y2 - y1)**2))
 
@@ -288,13 +290,15 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
     subjectStatistics.append(calculateMeanTwoValues(subjectStatistics[6], subjectStatistics[8]))
 
     # Calculating the time spent on durations and their count (True, False)
-    subjectStatistics.append(calculateDurationAndCount(dataOfSubjectTrue))
-    subjectStatistics.append(calculateDurationAndCount(dataofSubjectFalse))
+    # subjectStatistics.append(calculateDurationAndCount(dataOfSubjectTrue))
+    # subjectStatistics.append(calculateDurationAndCount(dataofSubjectFalse))
 
     return subjectStatistics
 
 def drawGraph(subjectList,N):
-    #'MFD_true', 'MFD_false', 'MSA_true', 'MSA_false'
+    """ Draws the graphs. """
+
+    # Graph which compares fixation durations amognst the users
     labels =[1,2]
     colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
     MFD_std = []#Error
@@ -305,6 +309,7 @@ def drawGraph(subjectList,N):
     s = 0
     e = 2
     known = ['true','false']
+    Agg_MSA_err = Agg_MFD_err = [0, 0] 
     for sub in subjectList:
         MFD_means.append(sub[1])
         MFD_means.append(sub[3])
@@ -314,6 +319,7 @@ def drawGraph(subjectList,N):
         nFalse = N[sub[0]+'_'+known[1]]
         n = [math.sqrt(nTrue), math.sqrt(nFalse)]
         MFD_std_error = np.divide(MFD_std,n)
+        Agg_MFD_err = Agg_MFD_err + MFD_std_error
         pyplot.bar(labels,MFD_means, color = colors[s:e], yerr = MFD_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -329,11 +335,18 @@ def drawGraph(subjectList,N):
     pyplot.xlabel('Labels as in the legend')
     pyplot.ylabel('Mean of MFD points')
     pyplot.show()
+
+    # Graph which compares saccade amplitudes amognst the users    
     labels =[1,2]
     i = 3
     s = 0
     e = 2
+    Agg_MFD_True = Agg_MFD_False = Agg_MSA_True = Agg_MSA_False = 0
     for sub in subjectList:
+        Agg_MFD_True = Agg_MFD_True + sub[1]
+        Agg_MFD_False = Agg_MFD_False + sub[3]
+        Agg_MSA_True = Agg_MSA_True + sub[5]
+        Agg_MSA_False = Agg_MSA_False + sub[7]
         MSA_means.append(sub[5])
         MSA_means.append(sub[7])
         MSA_std.append(sub[6])
@@ -342,6 +355,7 @@ def drawGraph(subjectList,N):
         nFalse = N[sub[0]+'_'+known[1]]
         n = [math.sqrt(nTrue), math.sqrt(nFalse)]
         MSA_std_error = np.divide(MSA_std,n)
+        Agg_MSA_err = Agg_MSA_err + MSA_std_error
         pyplot.bar(labels, MSA_means, color = colors[s:e], yerr = MSA_std_error, alpha = 0.5, align = 'center', capsize = 5)
         i,j = labels
         s=s+2
@@ -358,14 +372,39 @@ def drawGraph(subjectList,N):
     pyplot.ylabel('Mean of MSA points')
     pyplot.show()
     
+    # Aggregated graph for MFD 
+    labels = [1,2]
+    pyplot.bar(labels[0], Agg_MFD_True, color = colors[1], yerr = Agg_MFD_err[0], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.bar(labels[1], Agg_MFD_False, color = colors[3], yerr = Agg_MFD_err[1], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.title("MFD bar charts for aggregated samples" )
+    pyplot.legend(('Agg_MFD_True','Agg_MFD_False') , loc = 'upper right')
+    pyplot.ylim(top = 2)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Aggregated Mean of MFD')
+    pyplot.show()
+    
+    # Aggregated graph for MSA
+    pyplot.bar(labels[0], Agg_MSA_True, color = colors[1], yerr = Agg_MSA_err[0], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.bar(labels[1], Agg_MSA_False, color = colors[3], yerr = Agg_MSA_err[1], alpha = 0.5, align = 'center', capsize = 5 )
+    pyplot.title("MSA bar charts for aggregated samples" )
+    pyplot.legend(('Agg_MSA_True','Agg_MSA_False') , loc = 'upper right')
+    pyplot.ylim(top = 49)
+    pyplot.xlabel('Labels as in the legend')
+    pyplot.ylabel('Aggregated Mean of MSA')
+    pyplot.show() 
+    
 def printOutputToCsv(fileName, data):
+    """ Prints data to the output file. """
+
     outputFile    = open(fileName, "w")
     csvOutputFile = csv.writer(outputFile, delimiter=',')
     for subject in data:
         csvOutputFile.writerow(subject)
     outputFile.close()
-    
+
 def findLengthOfEachSample(centroids):
+    """ Finds length of each sample. """
+
     N = {}
     ids = ['s6_true','s6_false','s10_true','s10_false','s16_true','s16_false','s20_true','s20_false','s26_true','s26_false','s30_true','s30_false']
     for eachID in ids:
@@ -374,6 +413,7 @@ def findLengthOfEachSample(centroids):
             n = n + len(eachSample)
         N[eachID] = n
     return N   
+
 # ============================================================================
 # ====  MAIN RUTINE START  ===================================================
 # ============================================================================
@@ -409,24 +449,9 @@ def main(argc, argv):
 
     dataSet = convertUnitsToDegree(dataSet)
     centroids = detectCentroids(dataSet)
-    # print(centroids)
 
     # =============================
     # ========== TASK 2 ===========
-
-    #print(sorted(centroids.keys()))
-
-    #print(centroids["s10_true"][0][1:5])
-    #print(centroids["s10_false"][0][1:5])
-    #print(centroids["s16_true"][0][1:5])
-    #print(centroids["s16_false"][0][1:5])
-    #print(centroids["s20_true"][0][1:5])
-    #print(centroids["s20_false"][0][1:5])
-    #print(centroids["s26_true"][0][1:5])
-    #print(centroids["s26_false"][0][1:5])
-    #print(centroids["s30_true"][0][1:5])
-    #print(centroids["s30_false"][0][1:5])
-
 
     subjectList = list()
 
@@ -437,8 +462,6 @@ def main(argc, argv):
     subjectList.append(calculateStatisticsOneSubject("s26", centroids["s26_true"], centroids["s26_false"]))
     subjectList.append(calculateStatisticsOneSubject("s30", centroids["s30_true"], centroids["s30_false"]))
 
-    #print(subjectList)
-
     # =============================
     # ========== TASK 3 ===========
 
@@ -446,6 +469,7 @@ def main(argc, argv):
 
     # =============================
     # ========== TASK 4 ===========
+
     N = findLengthOfEachSample(centroids)
     drawGraph(subjectList,N)
    
@@ -456,4 +480,5 @@ def main(argc, argv):
 if __name__ == "__main__":
 	""" Calls the function main()."""
 	main(len(sys.argv), sys.argv)
+    
 # End of file: main.py
