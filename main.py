@@ -78,7 +78,7 @@ def convertUnitsToDegree(data):
     return(data)
 
 def despertion(dmin_x, dmax_x,dmin_y,dmax_y):
-    """ Makes despertion. """
+    """ Checks despertion maximum settings. """
 
     d = (dmax_x - dmin_x) + (dmax_y - dmin_y)
     if(d <= DESPERSION_MAX):
@@ -87,7 +87,7 @@ def despertion(dmin_x, dmax_x,dmin_y,dmax_y):
         return False
 
 def fixationDetection(data): 
-    """ Detects the fixation. """
+    """ Detects the fixation points. """
 
     # Initializtion of the variables
     window    = []
@@ -123,15 +123,14 @@ def fixationDetection(data):
                 y_avg = sum_xy[1] / n 
                 centroid = [x_avg, y_avg, time]
                 centroids.append(centroid)
-            # else(It is not fixtation):
-                # Other events
-            # Reset all variables when we destroy our window
+            """else: (It is not fixtation):
+                 Other events
+            Reset all variables when we destroy our window """
             window = []
             dmax_x = -1 * math.inf
             dmax_y = -1 * math.inf
             dmin_x = math.inf
-            dmin_y = math.inf   
-      
+            dmin_y = math.inf         
 # =============================================================================
 #     # Plot the result
 #     pyplot.plot(data[:,[0]], data[:,[1]])
@@ -298,7 +297,7 @@ def calculateStatisticsOneSubject(subjectName, dataOfSubjectTrue, dataofSubjectF
 def drawGraph(subjectList,N):
     """ Draws the graphs. """
 
-    # Graph which compares fixation durations amognst the users
+    # Graph which compares fixation durations against the users
     labels =[1,2]
     colors = ['red','red', 'blue','blue','teal', 'teal', 'yellow','yellow', 'green','green','gray', 'gray']
     MFD_std = []#Error
@@ -336,7 +335,7 @@ def drawGraph(subjectList,N):
     pyplot.ylabel('Mean of MFD points')
     pyplot.show()
 
-    # Graph which compares saccade amplitudes amognst the users    
+    # Graph which compares saccade amplitudes against the users    
     labels =[1,2]
     i = 3
     s = 0
